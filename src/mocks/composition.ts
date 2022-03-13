@@ -6,6 +6,7 @@ import {
   CompositionOptions,
   EncodeResponse,
   FilterLayer,
+  HTMLLayer,
   ImageLayer,
   LayerFormatValue,
   LottieLayer,
@@ -67,24 +68,41 @@ export const mockFilterLayer = (
   start,
 })
 
-export const mockImageLayer = (
-  { format, height, length, start, width, x, y }: ImageLayer = {
-    format: LayerFormatValue.fill,
-    height: 100,
-    length: 20,
-    start: 10,
-    width: 200,
-    x: 10,
-    y: 20,
+export const mockHTMLLayer = (
+  {
+    height,
+    width,
+    withHTML,
+    withTransparentBackground,
+    withURL,
+  }: { height?: number; width?: number; withHTML: boolean; withTransparentBackground?: boolean; withURL: boolean } = {
+    withHTML: true,
+    withURL: false,
   }
-): ImageLayer => ({
-  format,
+): HTMLLayer => ({
   height,
-  length,
-  start,
+  html: {
+    htmlPage: withHTML ? 'html' : undefined,
+    url: withURL ? 'url' : undefined,
+    withTransparentBackground,
+  },
   width,
-  x,
-  y,
+})
+
+export const mockImageLayer = ({ withFilter }: { withFilter: boolean } = { withFilter: false }): ImageLayer => ({
+  filter: withFilter
+    ? {
+        filterName: FilterName.brightness,
+        options: { brightness: 10 },
+      }
+    : undefined,
+  format: LayerFormatValue.fill,
+  height: 100,
+  length: 20,
+  start: 10,
+  width: 200,
+  x: 10,
+  y: 20,
 })
 
 export const mockLottieLayer = (

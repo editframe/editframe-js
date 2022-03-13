@@ -6,6 +6,7 @@ import {
   CompositionOptionAttribute,
   CompositionOptions,
   FilterLayer,
+  HTMLLayer,
   ImageLayer,
   LayerAttribute,
   LayerValidator,
@@ -24,6 +25,7 @@ import {
   validateLayerAudio,
   validateLayerBase,
   validateLayerFilter,
+  validateLayerHTML,
   validateLayerLottie,
   validateLayerText,
   validateLayerTrim,
@@ -132,8 +134,19 @@ export const validateLayerMethod = (
 export const validateAddAudio = (options: AudioLayer): void =>
   validateLayerMethod([validateLayerBase, validateLayerTrim, validateLayerAudio], CompositionMethod.addAudio, options)
 
+export const validateAddHTML = (options: HTMLLayer): void =>
+  validateLayerMethod(
+    [validateLayerBase, validateLayerVisualMedia, validateLayerFilter, validateLayerHTML],
+    CompositionMethod.addHTML,
+    options
+  )
+
 export const validateAddImage = (options: ImageLayer): void =>
-  validateLayerMethod([validateLayerBase, validateLayerVisualMedia], CompositionMethod.addImage, options)
+  validateLayerMethod(
+    [validateLayerBase, validateLayerVisualMedia, validateLayerFilter],
+    CompositionMethod.addImage,
+    options
+  )
 
 export const validateAddLottie = (options: LottieLayer): void => {
   validateLayerMethod(

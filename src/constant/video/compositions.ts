@@ -2,14 +2,15 @@ import { Blob } from 'node:buffer'
 import { Readable } from 'stream'
 
 import { Filter } from 'constant/video/filters'
-import { IdentifiedLayer, LayerAttribute, Size } from 'constant/video/layers'
+import { HTMLOptions, IdentifiedLayer, LayerAttribute, Size } from 'constant/video/layers'
 import { LottieAnimationData } from 'constant/video/lottie'
 
-export type LayerAttributeValue = number | string | Filter | LottieAnimationData
+export type LayerAttributeValue = number | string | Filter | LottieAnimationData | HTMLOptions
 
 export enum CompositionMethod {
   addAudio = 'addAudio',
   addFilter = 'addFilter',
+  addHTML = 'addHTML',
   addImage = 'addImage',
   addLottie = 'addLottie',
   addText = 'addText',

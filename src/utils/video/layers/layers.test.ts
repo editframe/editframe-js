@@ -1,18 +1,20 @@
 import {
+  HTMLAttribute,
   LayerAttribute,
   LayerHorizontalAlignmentValue,
   LayerVerticalAlignmentValue,
   PrimitiveType,
   TextAlignmentValue,
 } from 'constant'
-import { mockLottieLayer } from 'mocks'
-import { ValidationErrorText } from 'strings'
+import { mockHTMLLayer, mockLottieLayer } from 'mocks'
+import { CompositionErrorText, ValidationErrorText } from 'strings'
 import * as ValidationUtilsModule from 'utils/validation'
 
 import {
   validateHorizontalAlignment,
   validateLayerAlignment,
   validateLayerBase,
+  validateLayerHTML,
   validateLayerLottie,
   validateLayerText,
   validateLayerTrim,
@@ -54,6 +56,48 @@ describe('validations', () => {
         LayerAttribute.length,
         length,
         PrimitiveType.number
+      )
+
+      expect(finalErrors).toEqual([])
+    })
+  })
+
+  describe('validateLayerHTML', () => {
+    it('adds the `htmlPageOrURLRequired` error when neither `htmlPage` or `url` is provided', () => {
+      const htmlLayer = mockHTMLLayer({ withHTML: false, withURL: false })
+      const finalErrors = validateLayerHTML(callerName, htmlLayer)
+
+      expect(finalErrors).toEqual([CompositionErrorText.htmlPageOrURLRequired])
+    })
+
+    it('calls the `validateValueIsOfType` function with the correct arguments', () => {
+      const htmlLayer = mockHTMLLayer()
+      const finalErrors = validateLayerHTML(callerName, htmlLayer)
+      const {
+        html: { htmlPage, url, withTransparentBackground },
+      } = htmlLayer
+
+      expect(validateValueIsOfTypeSpy).toHaveBeenCalledTimes(3)
+
+      expect(validateValueIsOfTypeSpy).toHaveBeenCalledWith(
+        callerName,
+        ValidationErrorText.SUB_FIELD(LayerAttribute.html, HTMLAttribute.htmlPage),
+        htmlPage,
+        PrimitiveType.string
+      )
+
+      expect(validateValueIsOfTypeSpy).toHaveBeenCalledWith(
+        callerName,
+        ValidationErrorText.SUB_FIELD(LayerAttribute.html, HTMLAttribute.withTransparentBackground),
+        withTransparentBackground,
+        PrimitiveType.boolean
+      )
+
+      expect(validateValueIsOfTypeSpy).toHaveBeenCalledWith(
+        callerName,
+        ValidationErrorText.SUB_FIELD(LayerAttribute.html, HTMLAttribute.url),
+        url,
+        PrimitiveType.string
       )
 
       expect(finalErrors).toEqual([])

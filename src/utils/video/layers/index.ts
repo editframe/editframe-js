@@ -1,9 +1,11 @@
 import {
   AudioLayer,
   FilterLayer,
+  HTMLAttribute,
   LayerAlignment,
   LayerAttribute,
   LayerBase,
+  LayerHTML,
   LayerHorizontalAlignment,
   LayerHorizontalAlignmentValue,
   LayerLottie,
@@ -17,7 +19,7 @@ import {
   TextAlignmentValue,
   WaveformStyleValue,
 } from 'constant'
-import { ValidationErrorText } from 'strings'
+import { CompositionErrorText, ValidationErrorText } from 'strings'
 import { validateValueIsOfType } from 'utils/validation'
 import { validateFilter } from 'utils/video/filters'
 
@@ -63,10 +65,50 @@ export const validateLayerBase = (callerName: string, { length, start }: LayerBa
   return errors.filter(filterUndefined)
 }
 
+export const validateLayerHTML = (
+  callerName: string,
+  { html: { htmlPage, url, withTransparentBackground } }: LayerHTML
+): string[] => {
+  const errors: string[] = []
+
+  if (!htmlPage && !url) {
+    errors.push(CompositionErrorText.htmlPageOrURLRequired)
+  }
+
+  errors.push(
+    validateValueIsOfType(
+      callerName,
+      ValidationErrorText.SUB_FIELD(LayerAttribute.html, HTMLAttribute.htmlPage),
+      htmlPage,
+      PrimitiveType.string
+    )
+  )
+  errors.push(
+    validateValueIsOfType(
+      callerName,
+      ValidationErrorText.SUB_FIELD(LayerAttribute.html, HTMLAttribute.withTransparentBackground),
+      withTransparentBackground,
+      PrimitiveType.boolean
+    )
+  )
+  errors.push(
+    validateValueIsOfType(
+      callerName,
+      ValidationErrorText.SUB_FIELD(LayerAttribute.html, HTMLAttribute.url),
+      url,
+      PrimitiveType.string
+    )
+  )
+
+  return errors.filter(filterUndefined)
+}
+
 export const validateLayerFilter = (callerName: string, { filter }: FilterLayer): string[] => {
   const errors: string[] = []
 
-  validateFilter(callerName, LayerAttribute.filter, filter).forEach((error) => errors.push(error))
+  if (filter) {
+    validateFilter(callerName, LayerAttribute.filter, filter).forEach((error) => errors.push(error))
+  }
 
   return errors.filter(filterUndefined)
 }

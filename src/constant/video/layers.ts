@@ -1,5 +1,7 @@
 import {
   FontWeight,
+  HTMLAttribute,
+  HTMLOptions,
   LayerAttribute,
   LayerHorizontalAlignment,
   LayerHorizontalAlignmentValue,
@@ -15,6 +17,8 @@ import { Filter } from 'constant/video/filters'
 import { LottieAnimationData } from 'constant/video/lottie'
 
 export type { FontWeight as FontWeight }
+export { HTMLAttribute as HTMLAttribute }
+export type { HTMLOptions as HTMLOptions }
 export { LayerAttribute as LayerAttribute }
 export type { LayerHorizontalAlignment as LayerHorizontalAlignment }
 export { LayerHorizontalAlignmentValue as LayerHorizontalAlignmentValue }
@@ -32,6 +36,7 @@ export type Size = {
 export enum LayerType {
   audio = 'audio',
   filter = 'filter',
+  html = 'html',
   image = 'image',
   lottie = 'lottie',
   text = 'text',
@@ -73,6 +78,10 @@ export type LayerVisualMedia = Size & {
   [LayerAttribute.y]?: number
 }
 
+export type LayerHTML = {
+  [LayerAttribute.html]: HTMLOptions
+}
+
 export type LayerText = {
   [LayerAttribute.fontFamily]?: string
   [LayerAttribute.fontSize]?: number
@@ -90,7 +99,7 @@ export type LayerAudio = {
 }
 
 export type LayerFilter = {
-  [LayerAttribute.filter]: Filter
+  [LayerAttribute.filter]?: Filter
 }
 
 export type LayerLottie = {
@@ -103,16 +112,18 @@ export type LayerWaveform = {
 
 export type AudioLayer = LayerBase & LayerTrim & LayerAudio
 export type FilterLayer = LayerBase & LayerFilter
-export type ImageLayer = LayerBase & LayerVisualMedia
+export type HTMLLayer = LayerBase & LayerFilter & LayerVisualMedia & LayerHTML
+export type ImageLayer = LayerBase & LayerVisualMedia & LayerFilter
 export type LottieLayer = LayerBase & LayerLottie
 export type TextLayer = LayerBase & LayerAlignment & LayerText & LayerVisualMedia
-export type VideoLayer = LayerBase & LayerTrim & AudioLayer & LayerVisualMedia
+export type VideoLayer = LayerBase & LayerTrim & LayerAudio & LayerFilter & LayerVisualMedia
 
 export type WaveformLayer = LayerBase & LayerVisualMedia & LayerWaveform
 
 export type ComposableLayer =
   | AudioLayer
   | FilterLayer
+  | HTMLLayer
   | ImageLayer
   | LottieLayer
   | TextLayer

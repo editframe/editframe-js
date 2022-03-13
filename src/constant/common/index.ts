@@ -1,4 +1,5 @@
 export enum PrimitiveType {
+  boolean = 'boolean',
   number = 'number',
   object = 'object',
   string = 'string',

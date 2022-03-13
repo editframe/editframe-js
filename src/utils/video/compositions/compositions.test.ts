@@ -3,6 +3,7 @@ import {
   mockAudioLayer,
   mockCompositionOptions,
   mockFilterLayer,
+  mockHTMLLayer,
   mockImageLayer,
   mockLottieLayer,
   mockTextLayer,
@@ -17,6 +18,7 @@ import {
   formDataKey,
   validateAddAudio,
   validateAddFilter,
+  validateAddHTML,
   validateAddImage,
   validateAddLottie,
   validateAddText,
@@ -47,6 +49,7 @@ describe('validations', () => {
   let validateLayerAudioSpy: jest.SpyInstance
   let validateLayerBaseSpy: jest.SpyInstance
   let validateLayerFilterSpy: jest.SpyInstance
+  let validateLayerHTMLSpy: jest.SpyInstance
   let validateLayerLottieSpy: jest.SpyInstance
   let validateLayerTextSpy: jest.SpyInstance
   let validateLayerTrimSpy: jest.SpyInstance
@@ -63,6 +66,7 @@ describe('validations', () => {
     validateLayerAudioSpy = jest.spyOn(LayerUtilsModule, 'validateLayerAudio')
     validateLayerBaseSpy = jest.spyOn(LayerUtilsModule, 'validateLayerBase')
     validateLayerFilterSpy = jest.spyOn(LayerUtilsModule, 'validateLayerFilter')
+    validateLayerHTMLSpy = jest.spyOn(LayerUtilsModule, 'validateLayerHTML')
     validateLayerLottieSpy = jest.spyOn(LayerUtilsModule, 'validateLayerLottie')
     validateLayerTextSpy = jest.spyOn(LayerUtilsModule, 'validateLayerText')
     validateLayerTrimSpy = jest.spyOn(LayerUtilsModule, 'validateLayerTrim')
@@ -225,6 +229,10 @@ describe('validations', () => {
     it('calls the `validateLayerVisualMedia` function with the correct arguments', () => {
       expect(validateLayerVisualMediaSpy).toHaveBeenCalledWith(CompositionMethod.addImage, imageOptions)
     })
+
+    it('calls the `validateLayerFilter` function with the correct arguments', () => {
+      expect(validateLayerFilterSpy).toHaveBeenCalledWith(CompositionMethod.addImage, imageOptions)
+    })
   })
 
   describe('validateAddLottie', () => {
@@ -292,6 +300,30 @@ describe('validations', () => {
 
     it('calls the `validateLayerVisualMedia` function with the correct arguments', () => {
       expect(validateLayerVisualMediaSpy).toHaveBeenCalledWith(CompositionMethod.addVideo, videoOptions)
+    })
+  })
+
+  describe('validateAddHTML', () => {
+    const htmlLayer = mockHTMLLayer()
+
+    beforeEach(() => {
+      validateAddHTML(htmlLayer)
+    })
+
+    it('calls the `validateLayerBase` function with the correct arguments', () => {
+      expect(validateLayerBaseSpy).toHaveBeenCalledWith(CompositionMethod.addHTML, htmlLayer)
+    })
+
+    it('calls the `validateLayerVisualMedia` function with the correct arguments', () => {
+      expect(validateLayerVisualMediaSpy).toHaveBeenCalledWith(CompositionMethod.addHTML, htmlLayer)
+    })
+
+    it('calls the `validateFilter` function with the correct arguments', () => {
+      expect(validateLayerFilterSpy).toHaveBeenCalledWith(CompositionMethod.addHTML, htmlLayer)
+    })
+
+    it('calls the `validateLayerHTML` function with the correct arguments', () => {
+      expect(validateLayerHTMLSpy).toHaveBeenCalledWith(CompositionMethod.addHTML, htmlLayer)
     })
   })
 

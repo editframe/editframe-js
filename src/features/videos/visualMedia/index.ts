@@ -1,6 +1,15 @@
-import { CompositionInterface, LayerAttribute, LayerFormat, PrimitiveType, VisualMediaMethod } from 'constant'
+import {
+  CompositionInterface,
+  FilterOptions,
+  LayerAttribute,
+  LayerFormat,
+  PrimitiveType,
+  Size,
+  VisualMediaMethod,
+} from 'constant'
 import { Media } from 'features/videos/media'
-import { validateLayerFormat, validateValueIsOfType, withValidation } from 'utils'
+import { ValidationErrorText } from 'strings'
+import { validateFilter, validateLayerFormat, validatePresenceOf, validateValueIsOfType, withValidation } from 'utils'
 
 export class VisualMedia extends Media {
   constructor({ composition, id }: { composition: CompositionInterface; id: string }) {
@@ -25,6 +34,37 @@ export class VisualMedia extends Media {
     withValidation<this>(
       () => validateValueIsOfType(VisualMediaMethod.setColor, LayerAttribute.color, color, PrimitiveType.string, true),
       () => this._updateAttribute(LayerAttribute.color, color)
+    )
+  }
+
+  [VisualMediaMethod.setDimensions]({ height, width }: Size): this | void {
+    withValidation<this>(
+      () => {
+        validatePresenceOf(height, ValidationErrorText.REQUIRED_FIELD(LayerAttribute.height))
+        validatePresenceOf(width, ValidationErrorText.REQUIRED_FIELD(LayerAttribute.width))
+      },
+      () => {
+        this._updateAttribute(LayerAttribute.height, height)
+
+        return this._updateAttribute(LayerAttribute.width, width)
+      }
+    )
+  }
+
+  [VisualMediaMethod.setFilter]<FilterName extends keyof FilterOptions>({
+    filterName,
+    options,
+  }: {
+    filterName: FilterName
+    options?: FilterOptions[FilterName]
+  }): this | void {
+    withValidation<this>(
+      () => validateFilter(VisualMediaMethod.setFilter, LayerAttribute.filter, { filterName, options }, true),
+      () =>
+        this._updateAttribute(LayerAttribute.filter, {
+          filterName,
+          options,
+        })
     )
   }
 

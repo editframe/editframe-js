@@ -29,7 +29,7 @@ export const validatePresenceOf = (value: any, errorMessage: string): void => {
 export const validateValueIsOfType = (
   caller: string,
   fieldName: string,
-  value: number | string | Record<string, any> | undefined,
+  value: boolean | number | string | Record<string, any> | undefined,
   type: string,
   shouldThrow = false
 ): string | undefined => {

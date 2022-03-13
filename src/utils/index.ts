@@ -18,6 +18,7 @@ import {
   formDataKey,
   validateAddAudio,
   validateAddFilter,
+  validateAddHTML,
   validateAddImage,
   validateAddLottie,
   validateAddText,
@@ -28,12 +29,14 @@ import {
   validateVideoOptions,
 } from './video/compositions'
 import { validateFilter } from './video/filters'
+import { escapeHTML } from './video/html'
 import {
   validateHorizontalAlignment,
   validateLayerAlignment,
   validateLayerAudio,
   validateLayerBase,
   validateLayerFilter,
+  validateLayerHTML,
   validateLayerLottie,
   validateLayerText,
   validateLayerTrim,
@@ -47,6 +50,7 @@ export {
   createDirectory,
   createReadStream,
   downloadFile,
+  escapeHTML,
   formDataKey,
   generatePath,
   initializeFetchUtil,
@@ -65,6 +69,7 @@ export {
   uuid,
   validateAddAudio,
   validateAddFilter,
+  validateAddHTML,
   validateAddImage,
   validateAddLottie,
   validateAddText,
@@ -78,6 +83,7 @@ export {
   validateLayerAudio,
   validateLayerBase,
   validateLayerFilter,
+  validateLayerHTML,
   validateLayerFormat,
   validateLayerLottie,
   validateLayerMethod,

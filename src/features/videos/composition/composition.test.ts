@@ -1,6 +1,7 @@
-import { ApiInterface, FormDataInterface, LayerAttribute, LayerType, Routes } from 'constant'
+import { ApiInterface, FormDataInterface, LayerAttribute, LayerHTML, LayerType, Routes } from 'constant'
 import { Audio } from 'features/videos/audio'
 import { Filter } from 'features/videos/filter'
+import { HTML } from 'features/videos/html'
 import { Lottie } from 'features/videos/lottie'
 import { Text } from 'features/videos/text'
 import { Video } from 'features/videos/video'
@@ -11,6 +12,7 @@ import {
   mockCompositionOptions,
   mockEncodeResponse,
   mockFilterLayer,
+  mockHTMLLayer,
   mockImageLayer,
   mockLottieLayer,
   mockTextLayer,
@@ -21,6 +23,7 @@ import { CompositionErrorText, MediaErrorText } from 'strings'
 import * as StringsUtilsModule from 'utils/strings'
 import * as ValidationUtilsModule from 'utils/validation'
 import * as CompositionUtilsModule from 'utils/video/compositions'
+import * as HTMLUtilsModule from 'utils/video/html'
 
 import { Composition } from './'
 
@@ -41,11 +44,14 @@ describe('Composition', () => {
   const videoOptions = mockVideoLayer()
   const waveformOptions = mockWaveformLayer()
   const uuidMock = '123456'
+  let htmlOptions: LayerHTML
   let apiMock: ApiInterface
   let consoleErrorSpy: jest.SpyInstance
+  let escapeHTMLSpy: jest.SpyInstance
   let postMock: jest.Mock
   let validateAddAudioSpy: jest.SpyInstance
   let validateAddFilterSpy: jest.SpyInstance
+  let validateAddHTMLSpy: jest.SpyInstance
   let validateAddImageSpy: jest.SpyInstance
   let validateAddLottieSpy: jest.SpyInstance
   let validateAddTextSpy: jest.SpyInstance
@@ -63,17 +69,20 @@ describe('Composition', () => {
     })
 
   afterEach(() => {
-    jest.resetAllMocks()
+    jest.clearAllMocks()
   })
 
   beforeEach(() => {
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
     postMock = jest.fn()
     apiMock = mockApi({ get: jest.fn(), post: postMock, put: jest.fn() })
+
+    escapeHTMLSpy = jest.spyOn(HTMLUtilsModule, 'escapeHTML')
     formDataMock = { append: jest.fn() }
     jest.spyOn(StringsUtilsModule, 'uuid').mockReturnValue(uuidMock)
     validateAddAudioSpy = jest.spyOn(CompositionUtilsModule, 'validateAddAudio')
     validateAddFilterSpy = jest.spyOn(CompositionUtilsModule, 'validateAddFilter')
+    validateAddHTMLSpy = jest.spyOn(CompositionUtilsModule, 'validateAddHTML')
     validateAddImageSpy = jest.spyOn(CompositionUtilsModule, 'validateAddImage')
     validateAddLottieSpy = jest.spyOn(CompositionUtilsModule, 'validateAddLottie')
     validateAddTextSpy = jest.spyOn(CompositionUtilsModule, 'validateAddText')
@@ -192,6 +201,109 @@ describe('Composition', () => {
       const filter = composition.addFilter(filterOptions)
 
       expect(filter instanceof Filter).toBe(true)
+    })
+  })
+
+  describe('addHTML', () => {
+    describe('when a `url` is provided', () => {
+      beforeEach(() => {
+        htmlOptions = mockHTMLLayer({ withHTML: false, withURL: true })
+        composition = makeComposition()
+
+        composition.addHTML(htmlOptions)
+      })
+
+      it('does not escape html', () => {
+        expect(escapeHTMLSpy).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('when an `htmlPage` is provided', () => {
+      beforeEach(() => {
+        htmlOptions = mockHTMLLayer()
+        composition = makeComposition()
+
+        composition.addHTML(htmlOptions)
+      })
+
+      it('escapes provided html', () => {
+        expect(escapeHTMLSpy).toHaveBeenCalledWith(htmlOptions.html.htmlPage)
+      })
+    })
+
+    describe('when no `height` or `width` is provided', () => {
+      beforeEach(() => {
+        htmlOptions = mockHTMLLayer()
+        composition = makeComposition()
+
+        composition.addHTML(htmlOptions)
+      })
+
+      it('uses the composition height and width', () => {
+        expect(composition.layers[0]).toEqual({
+          id: uuidMock,
+          type: LayerType.html,
+          ...{ ...htmlOptions, height: options.dimensions.height, width: options.dimensions.width },
+        })
+      })
+    })
+
+    describe('when no `withTransparentBackground` option is provided', () => {
+      beforeEach(() => {
+        htmlOptions = mockHTMLLayer({
+          height: 10,
+          width: 20,
+          withHTML: true,
+          withTransparentBackground: undefined,
+          withURL: false,
+        })
+        composition = makeComposition()
+
+        composition.addHTML(htmlOptions)
+      })
+
+      it('defaults `withTransparentBackground` to false', () => {
+        expect(composition.layers[0]).toEqual({
+          id: uuidMock,
+          type: LayerType.html,
+          ...htmlOptions,
+          ...{ html: { ...htmlOptions.html, withTransparentBackground: false } },
+        })
+      })
+    })
+
+    describe('always', () => {
+      const height = 50
+      const width = 100
+
+      beforeEach(() => {
+        htmlOptions = mockHTMLLayer({ height, width, withHTML: true, withURL: false })
+        composition = makeComposition()
+
+        composition.addHTML({ ...htmlOptions, height, width })
+      })
+
+      it('calls the `validatePresenceOf` function with the correct arguments', () => {
+        expect(validatePresenceOfSpy).toHaveBeenCalledWith(htmlOptions, CompositionErrorText.optionsRequired)
+      })
+
+      it('calls the `validateAddHTML` function with the correct arguments', () => {
+        expect(validateAddHTMLSpy).toHaveBeenCalledWith(htmlOptions)
+      })
+
+      it('adds an `html` layer with the correct attributes', () => {
+        expect(composition.layers[0]).toEqual({
+          id: uuidMock,
+          type: LayerType.html,
+          ...{ height, width, ...htmlOptions },
+        })
+      })
+
+      it('returns a `HTML` object', () => {
+        const html = composition.addHTML(htmlOptions)
+
+        expect(html instanceof HTML).toBe(true)
+      })
     })
   })
 
