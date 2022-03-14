@@ -67,7 +67,7 @@ export const validateLayerBase = (callerName: string, { length, start }: LayerBa
 
 export const validateLayerHTML = (
   callerName: string,
-  { html: { htmlPage, url, withTransparentBackground } }: LayerHTML
+  { html: { duration, framesPerSecond, htmlPage, url, withTransparentBackground } }: LayerHTML
 ): string[] => {
   const errors: string[] = []
 
@@ -75,6 +75,22 @@ export const validateLayerHTML = (
     errors.push(CompositionErrorText.htmlPageOrURLRequired)
   }
 
+  errors.push(
+    validateValueIsOfType(
+      callerName,
+      ValidationErrorText.SUB_FIELD(LayerAttribute.html, HTMLAttribute.duration),
+      duration,
+      PrimitiveType.number
+    )
+  )
+  errors.push(
+    validateValueIsOfType(
+      callerName,
+      ValidationErrorText.SUB_FIELD(LayerAttribute.html, HTMLAttribute.framesPerSecond),
+      framesPerSecond,
+      PrimitiveType.number
+    )
+  )
   errors.push(
     validateValueIsOfType(
       callerName,

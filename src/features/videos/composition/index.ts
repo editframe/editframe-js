@@ -5,6 +5,7 @@ import {
   CompositionInterface,
   CompositionMethod,
   CompositionOptions,
+  DefaultScreenRecordingFPS,
   EncodeResponse,
   FilterLayer,
   FormDataInterface,
@@ -142,10 +143,14 @@ export class Composition implements CompositionInterface {
       () => {
         const {
           height,
-          html: { htmlPage, withTransparentBackground },
+          html: { duration, framesPerSecond, htmlPage, withTransparentBackground },
           width,
         } = options
         const transformedOptions: HTMLLayer = { ...options }
+
+        if (duration && !framesPerSecond) {
+          transformedOptions.html.framesPerSecond = DefaultScreenRecordingFPS
+        }
 
         if (htmlPage) {
           transformedOptions.html.htmlPage = escapeHTML(htmlPage)

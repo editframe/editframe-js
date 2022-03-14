@@ -1,4 +1,14 @@
-import { ApiInterface, FormDataInterface, LayerAttribute, LayerHTML, LayerType, Routes } from 'constant'
+import {
+  ApiInterface,
+  DefaultScreenRecordingFPS,
+  FormDataInterface,
+  HTMLLayer,
+  LayerAttribute,
+  LayerHTML,
+  LayerType,
+  Routes,
+  Size,
+} from 'constant'
 import { Audio } from 'features/videos/audio'
 import { Filter } from 'features/videos/filter'
 import { HTML } from 'features/videos/html'
@@ -218,6 +228,23 @@ describe('Composition', () => {
       })
     })
 
+    describe('when a `duration` is provided', () => {
+      beforeEach(() => {
+        htmlOptions = mockHTMLLayer({ duration: 10, withHTML: false, withURL: true })
+        composition = makeComposition()
+
+        composition.addHTML(htmlOptions)
+      })
+
+      it('defaults the `framesPerSecond` to the default', () => {
+        const {
+          html: { framesPerSecond },
+        } = composition.layers[0] as HTMLLayer
+
+        expect(framesPerSecond).toEqual(DefaultScreenRecordingFPS)
+      })
+    })
+
     describe('when an `htmlPage` is provided', () => {
       beforeEach(() => {
         htmlOptions = mockHTMLLayer()
@@ -240,11 +267,10 @@ describe('Composition', () => {
       })
 
       it('uses the composition height and width', () => {
-        expect(composition.layers[0]).toEqual({
-          id: uuidMock,
-          type: LayerType.html,
-          ...{ ...htmlOptions, height: options.dimensions.height, width: options.dimensions.width },
-        })
+        const { height, width } = composition.layers[0] as Size
+
+        expect(height).toEqual(options.dimensions.height)
+        expect(width).toEqual(options.dimensions.width)
       })
     })
 
@@ -263,12 +289,11 @@ describe('Composition', () => {
       })
 
       it('defaults `withTransparentBackground` to false', () => {
-        expect(composition.layers[0]).toEqual({
-          id: uuidMock,
-          type: LayerType.html,
-          ...htmlOptions,
-          ...{ html: { ...htmlOptions.html, withTransparentBackground: false } },
-        })
+        const {
+          html: { withTransparentBackground },
+        } = composition.layers[0] as LayerHTML
+
+        expect(withTransparentBackground).toEqual(false)
       })
     })
 

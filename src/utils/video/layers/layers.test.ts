@@ -74,10 +74,24 @@ describe('validations', () => {
       const htmlLayer = mockHTMLLayer()
       const finalErrors = validateLayerHTML(callerName, htmlLayer)
       const {
-        html: { htmlPage, url, withTransparentBackground },
+        html: { duration, framesPerSecond, htmlPage, url, withTransparentBackground },
       } = htmlLayer
 
-      expect(validateValueIsOfTypeSpy).toHaveBeenCalledTimes(3)
+      expect(validateValueIsOfTypeSpy).toHaveBeenCalledTimes(5)
+
+      expect(validateValueIsOfTypeSpy).toHaveBeenCalledWith(
+        callerName,
+        ValidationErrorText.SUB_FIELD(LayerAttribute.html, HTMLAttribute.duration),
+        duration,
+        PrimitiveType.number
+      )
+
+      expect(validateValueIsOfTypeSpy).toHaveBeenCalledWith(
+        callerName,
+        ValidationErrorText.SUB_FIELD(LayerAttribute.html, HTMLAttribute.framesPerSecond),
+        framesPerSecond,
+        PrimitiveType.number
+      )
 
       expect(validateValueIsOfTypeSpy).toHaveBeenCalledWith(
         callerName,

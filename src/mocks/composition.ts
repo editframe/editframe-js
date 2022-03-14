@@ -70,18 +70,27 @@ export const mockFilterLayer = (
 
 export const mockHTMLLayer = (
   {
+    duration,
     height,
     width,
     withHTML,
     withTransparentBackground,
     withURL,
-  }: { height?: number; width?: number; withHTML: boolean; withTransparentBackground?: boolean; withURL: boolean } = {
+  }: {
+    duration?: number
+    height?: number
+    width?: number
+    withHTML: boolean
+    withTransparentBackground?: boolean
+    withURL: boolean
+  } = {
     withHTML: true,
     withURL: false,
   }
 ): HTMLLayer => ({
   height,
   html: {
+    duration,
     htmlPage: withHTML ? 'html' : undefined,
     url: withURL ? 'url' : undefined,
     withTransparentBackground,
