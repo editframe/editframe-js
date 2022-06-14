@@ -1,7 +1,33 @@
 {
-  "author": "Editframe",
+  "name": "@editframe/editframe-js",
+  "version": "",
+  "description": "Node library for interacting with the Editframe API.",
+  "homepage": "https://github.com/editframe/editframe-js",
   "bugs": {
     "url": "https://github.com/editframe/editframe-js/issues"
+  },
+  "license": "Apache-2.0",
+  "contributors": [
+    "Bryce Jackson <bryce@editframe.com>",
+    "Nick Camillo <nick@editframe.com>",
+    "Patrik Csak <patrik@editframe.com>"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "dist/index.js",
+  "repository": "github:editframe/editframe-js",
+  "scripts": {
+    "build": "rollup -c && tsc-alias",
+    "build:watch": "rollup -w & tsc-alias -w",
+    "format": "prettier --write '**/*.{js,ts}' --loglevel error",
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --ext .ts . --fix",
+    "prepare": "husky install",
+    "semantic-release": "yarn build && semantic-release --extends ./release.config.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "audio-extensions": "^0.0.0",
@@ -26,7 +52,6 @@
     "uuid": "^8.3.2",
     "video-extensions": "^1.2.0"
   },
-  "description": "Node library for interacting with the Editframe API.",
   "devDependencies": {
     "@babel/core": "^7.16.12",
     "@babel/preset-env": "^7.16.11",
@@ -93,30 +118,6 @@
     "node": ">=10.15.3",
     "npm": ">=5"
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "homepage": "https://github.com/editframe/editframe-js",
-  "license": "Apache-2.0",
-  "main": "dist/index.js",
   "module": "dist/index.es.js",
-  "name": "@editframe/editframe-js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/editframe/editframe-js"
-  },
-  "scripts": {
-    "build": "rollup -c && tsc-alias",
-    "build:watch": "rollup -w & tsc-alias -w",
-    "format": "prettier --write '**/*.{js,ts}' --loglevel error",
-    "lint": "eslint --ext .ts .",
-    "lint:fix": "eslint --ext .ts . --fix",
-    "prepare": "husky install",
-    "semantic-release": "yarn build && semantic-release --extends ./release.config.js",
-    "test": "jest",
-    "test:watch": "jest --watch"
-  },
-  "types": "dist/index.d.ts",
-  "version": ""
+  "types": "dist/index.d.ts"
 }
