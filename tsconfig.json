@@ -1,5 +1,7 @@
 {
   "extends": "@tsconfig/node14/tsconfig.json",
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.test.ts"],
   "compilerOptions": {
     "baseUrl": "./src",
     "declaration": true,
@@ -15,5 +17,4 @@
     "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true
   },
-  "include": ["src/**/*"]
 }
