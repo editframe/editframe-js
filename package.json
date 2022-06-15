@@ -20,7 +20,7 @@
   "repository": "github:editframe/editframe-js",
   "scripts": {
     "build": "del-cli dist && tsc && tsc-alias",
-    "build:watch": "del-cli dist && tsc --watch & tsc-alias",
+    "build:watch": "del-cli dist && tsc --watch & tsc-alias --watch",
     "format": "prettier --write '**/*.{js,ts}' --loglevel error",
     "lint": "eslint --ext .ts .",
     "lint:fix": "eslint --ext .ts . --fix",
