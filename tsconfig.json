@@ -13,9 +13,7 @@
     "sourceMap": true,
     "strict": false,
     "strictNullChecks": false,
-    "suppressImplicitAnyIndexErrors": true,
-    "types": ["jest", "node"],
-    "typeRoots": ["node_modules/@types"]
+    "suppressImplicitAnyIndexErrors": true
   },
   "include": ["src"]
 }
