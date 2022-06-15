@@ -41,7 +41,7 @@ export enum ApiHeaderKey {
 
 export enum ApiHeaderValue {
   bearer = 'Bearer ',
-  editframeJs = 'editframe.js/',
+  editframeJs = 'editframe.js',
   xRequestedWithXML = 'XMLHttpRequest',
 }
 

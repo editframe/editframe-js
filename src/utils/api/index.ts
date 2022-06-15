@@ -4,8 +4,6 @@ import fetch from 'cross-fetch'
 import { ApiHeaderKey, ApiHeaderValue, ApiHeaders, FetchFunction, Fetcher, MakeFetchFunction, MimeType } from 'constant'
 import { ApiErrorText } from 'strings'
 
-import { version } from '../../../package.json'
-
 export const baseUrl = (host: string, version: number): string => `${host}/v${version}`
 
 export const initializeFetchUtil = (baseUrl: string): FetchFunction => makeRequest(makeFetcher(baseUrl))
@@ -44,7 +42,7 @@ export const makeHeaders = ({
   token: string
 }): ApiHeaders => {
   const headers: ApiHeaders = {
-    [ApiHeaderKey.userAgent]: `${ApiHeaderValue.editframeJs}${version}`,
+    [ApiHeaderKey.userAgent]: `${ApiHeaderValue.editframeJs}`,
     [ApiHeaderKey.editframeClientId]: clientId,
     [ApiHeaderKey.authorization]: `${ApiHeaderValue.bearer}${token}`,
   }
