@@ -15,5 +15,5 @@
     "strictNullChecks": false,
     "suppressImplicitAnyIndexErrors": true
   },
-  "include": ["src"]
+  "include": ["src/**/*"]
 }
