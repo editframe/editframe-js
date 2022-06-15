@@ -10,7 +10,6 @@
     "noUnusedParameters": true,
     "outDir": "dist",
     "resolveJsonModule": true,
-    "rootDirs": ["src"],
     "sourceMap": true,
     "strict": false,
     "strictNullChecks": false,
