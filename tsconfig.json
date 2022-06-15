@@ -1,7 +1,6 @@
 {
   "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
     "declaration": true,
     "noImplicitAny": true,
