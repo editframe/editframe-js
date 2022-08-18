@@ -57,6 +57,7 @@
     "@typescript-eslint/parser": "^4.31.2",
     "@typescript-eslint/typescript-estree": "^4.31.2",
     "babel-jest": "^27.4.6",
+    "del-cli": "^5.0.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-import": "^2.24.2",
@@ -115,8 +116,8 @@
     "url": "git+https://github.com/editframe/editframe-js"
   },
   "scripts": {
-    "build": "rollup -c && tsc-alias",
-    "build:watch": "rollup -w & tsc-alias -w",
+    "build": "del dist && rollup -c && tsc-alias",
+    "build:watch": "del dist && rollup -w & tsc-alias -w",
     "format": "prettier --write '**/*.{js,ts}' --loglevel error",
     "lint": "eslint --ext .ts .",
     "lint:fix": "eslint --ext .ts . --fix",
