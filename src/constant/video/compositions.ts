@@ -96,6 +96,7 @@ export type CompositionOptions = {
   [CompositionKey.dimensions]: Dimensions
   [CompositionKey.duration]?: number
   [CompositionKey.metadata]?: Metadata
+  shouldWatermark?: boolean
 }
 
 export type EncodeConfig = CompositionOptions & {
