@@ -696,6 +696,7 @@ export class Composition implements CompositionInterface {
         ...this._options,
         files: this._files,
         layers: this._layers,
+        ...(process.env.EDITFRAME_WATERMARK === 'false' ? { shouldWatermark: false } : undefined),
       })
     )
   }
@@ -715,6 +716,7 @@ export class Composition implements CompositionInterface {
       JSON.stringify({
         ...this._options,
         layers: this._layers.filter((layer) => layer.type !== LayerType.sequence),
+        ...(process.env.EDITFRAME_WATERMARK === 'false' ? { shouldWatermark: false } : undefined),
       })
     )
 

@@ -91,7 +91,6 @@ export class Videos {
       },
       async () => {
         let composition: Composition
-        const disableWatermark = process.env.EDITFRAME_WATERMARK === 'false'
 
         if (videoFile) {
           const temporaryDirectory = createTemporaryDirectory()
@@ -111,7 +110,6 @@ export class Videos {
               ...transformedOptions,
               dimensions: { height, width },
               duration,
-              ...(disableWatermark ? { shouldWatermark: false } : undefined),
             },
             temporaryDirectory,
             videos: this,
@@ -131,7 +129,6 @@ export class Videos {
               dimensions,
               duration,
               metadata,
-              ...(disableWatermark ? { shouldWatermark: false } : undefined),
             },
             videos: this,
           })
