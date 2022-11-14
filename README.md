@@ -26,3 +26,7 @@ yarn add @editframe/editframe-js
 # Documentation
 
 [Editframe Documentation](https://editframe.com/docs)
+
+# Examples
+
+See the `./examples` folder for some examples of different use cases.
