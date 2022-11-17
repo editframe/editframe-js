@@ -1,5 +1,6 @@
 import { mockAudioLayer, mockAudioLayerConfig } from './audio'
 import { mockFilterLayer, mockFilterOptions } from './filter'
+import { mockGroupLayer, mockGroupLayerConfig } from './group'
 import { mockHtmlLayer, mockHtmlLayerConfig, mockHtmlOptions } from './html'
 import { mockImageLayer, mockImageLayerConfig } from './image'
 import { mockLottieLayer, mockLottieLayerConfig, mockLottieOptions } from './lottie'
@@ -14,6 +15,8 @@ export {
   mockAudioLayerConfig,
   mockFilterLayer,
   mockFilterOptions,
+  mockGroupLayer,
+  mockGroupLayerConfig,
   mockHtmlLayer,
   mockHtmlLayerConfig,
   mockHtmlOptions,

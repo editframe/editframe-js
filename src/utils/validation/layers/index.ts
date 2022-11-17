@@ -1,5 +1,6 @@
 import { validateAudioLayer } from './audio'
 import { validateFilter, validateFilterLayer } from './filter'
+import { validateGroupLayer } from './group'
 import { validateHtml, validateHtmlLayer, validateHtmlPage } from './html'
 import { validateImageLayer } from './image'
 import { validateLottie, validateLottieLayer } from './lottie'
@@ -22,6 +23,7 @@ export {
   validateFilterLayer,
   validateFontStyle,
   validateFontWeight,
+  validateGroupLayer,
   validateHtml,
   validateHtmlLayer,
   validateHtmlPage,

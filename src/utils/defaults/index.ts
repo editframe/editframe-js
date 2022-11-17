@@ -1,4 +1,5 @@
 import { makeDefaultAudioLayer, makeDefaultAudioLayerConfig } from 'utils/defaults/audio'
+import { makeDefaultGroupLayer, makeDefaultGroupLayerConfig } from 'utils/defaults/group'
 import { makeDefaultHtmlLayer, makeDefaultHtmlLayerConfig } from 'utils/defaults/html'
 import { makeDefaultImageLayer, makeDefaultImageLayerConfig } from 'utils/defaults/image'
 import { makeDefaultLottieLayer, makeDefaultLottieLayerConfig } from 'utils/defaults/lottie'
@@ -12,6 +13,8 @@ import { makeDefaultWaveformLayer, makeDefaultWaveformLayerConfig } from 'utils/
 export {
   makeDefaultAudioLayer,
   makeDefaultAudioLayerConfig,
+  makeDefaultGroupLayer,
+  makeDefaultGroupLayerConfig,
   makeDefaultHtmlLayer,
   makeDefaultHtmlLayerConfig,
   makeDefaultImageLayer,

@@ -34,6 +34,9 @@ import {
   FilterLayer,
   Filters,
   FormDataInterface,
+  GroupLayer,
+  GroupLayerConfig,
+  GroupableLayer,
   HtmlKey,
   HtmlLayer,
   HtmlLayerConfig,
@@ -77,6 +80,7 @@ import {
 import { Videos } from 'features'
 import { Audio } from 'features/videos/layers/audio'
 import { Filter } from 'features/videos/layers/filter'
+import { Group } from 'features/videos/layers/group'
 import { Html } from 'features/videos/layers/html'
 import { Image } from 'features/videos/layers/image'
 import { Lottie } from 'features/videos/layers/lottie'
@@ -102,6 +106,7 @@ import {
   preparePreview,
   processCompositionFile,
   processCrossfades,
+  processGroupedLayer,
   processKenBurns,
   removeDirectory,
   setLayerDefaults,
@@ -113,6 +118,7 @@ import {
   validateCompositionFile,
   validateCompositionOptions,
   validateFilterLayer,
+  validateGroupLayer,
   validateHtmlLayer,
   validateImageLayer,
   validateLottieLayer,
@@ -290,6 +296,26 @@ export class Composition implements CompositionInterface {
     )
   }
 
+  public [CompositionMethod.addGroup](layers: GroupableLayer[], layerConfig: GroupLayerConfig): Group {
+    const groupLayer: GroupLayer = this._setLayerDefaults<GroupLayer>({
+      layerConfig,
+      layerType: LayerType.group,
+    })
+
+    return withValidation<Group>(
+      () => {
+        validateGroupLayer(CompositionMethod.addGroup, groupLayer)
+      },
+      () => {
+        layers.map((layer) => processGroupedLayer(layer, layerConfig))
+
+        const { id } = this._addIdentifiedLayer({ type: LayerType.group, ...groupLayer })
+
+        return new Group({ composition: this, id, layers })
+      }
+    )
+  }
+
   public async [CompositionMethod.addHtml](options: HtmlOptions, layerConfig?: HtmlLayerConfig): Promise<Html> {
     const htmlLayer: HtmlLayer = this._setLayerDefaults<HtmlLayer>({
       layerConfig,
@@ -368,7 +394,7 @@ export class Composition implements CompositionInterface {
       layerType: LayerType.sequence,
     })
 
-    return await withValidationAsync<any>(
+    return await withValidationAsync<Sequence>(
       () => {
         validateSequenceLayer(CompositionMethod.addSequence, sequenceLayer)
       },
@@ -412,6 +438,10 @@ export class Composition implements CompositionInterface {
 
           if (filepath) {
             this._setFile(layer.id, createReadStream(filepath))
+          }
+
+          if (type === LayerType.group) {
+            layer.setStart(currentTime)
           }
 
           if (LayerKey.trim in layer) {
@@ -760,7 +790,7 @@ export class Composition implements CompositionInterface {
       'config',
       JSON.stringify({
         ...this._options,
-        layers: this._identifiedLayers.filter((layer) => layer.type !== LayerType.sequence),
+        layers: this._identifiedLayers.filter((layer) => ![LayerType.group, LayerType.sequence].includes(layer.type)),
       })
     )
 

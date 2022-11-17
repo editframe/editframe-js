@@ -1,6 +1,7 @@
 import { Readable } from 'stream'
 
 import {
+  AudibleLayers,
   ComposableLayer,
   CompositionFile,
   DefaultAudioOptions,
@@ -9,19 +10,30 @@ import {
   DefaultTextOptions,
   DefaultWaveformOptions,
   Dimensions,
+  GroupLayerConfig,
+  GroupableLayer,
   LayerConfigs,
   LayerOptions,
   LayerType,
+  PositionableLayers,
   SequenceableLayer,
+  SizeableLayers,
+  TimelineableLayers,
   TransitionFadeOptions,
   TransitionType,
+  TransitionableLayers,
+  TrimmableLayers,
   defaultFilterLayer,
   defaultFilterOptions,
 } from 'constant'
+import { AudioMixin } from 'features/videos/mixins/audioMixin'
+import { PositionMixin } from 'features/videos/mixins/positionMixin'
+import { SizeMixin } from 'features/videos/mixins/sizeMixin'
 import { TransitionsMixin } from 'features/videos/mixins/transitionMixin'
 import { ValidationErrorText } from 'strings'
 import {
   makeDefaultAudioLayer,
+  makeDefaultGroupLayer,
   makeDefaultHtmlLayer,
   makeDefaultImageLayer,
   makeDefaultLottieLayer,
@@ -50,6 +62,7 @@ export const setLayerDefaults = <Layer>(
   const layerOptionsDefaults: Record<LayerType, LayerOptions> = {
     [LayerType.audio]: deepClone(DefaultAudioOptions),
     [LayerType.filter]: deepClone(defaultFilterOptions),
+    [LayerType.group]: undefined,
     [LayerType.html]: deepClone(DefaultHtmlOptions),
     [LayerType.image]: undefined,
     [LayerType.lottie]: {},
@@ -63,6 +76,7 @@ export const setLayerDefaults = <Layer>(
   const layerDefaults: Record<LayerType, ComposableLayer> = {
     [LayerType.audio]: deepClone(makeDefaultAudioLayer()),
     [LayerType.filter]: deepClone(defaultFilterLayer),
+    [LayerType.group]: deepClone(makeDefaultGroupLayer()),
     [LayerType.html]: deepClone(makeDefaultHtmlLayer()),
     [LayerType.image]: deepClone(makeDefaultImageLayer()),
     [LayerType.lottie]: deepClone(makeDefaultLottieLayer()),
@@ -168,6 +182,65 @@ export const processCrossfades = (
   }
 
   return newCurrentTime
+}
+
+export const processGroupedLayer = (layer: GroupableLayer, layerConfig: GroupLayerConfig): void => {
+  if (layerConfig.audio && AudibleLayers.includes(layer.type)) {
+    ;(layer as AudioMixin).setVolume(layerConfig.audio.volume)
+  }
+
+  if (layerConfig.position && PositionableLayers.includes(layer.type)) {
+    if (layerConfig.position.angle) {
+      ;(layer as PositionMixin).setAngle(layerConfig.position.angle)
+    }
+    if (layerConfig.position.angleX) {
+      ;(layer as PositionMixin).setAngleX(layerConfig.position.angleX)
+    }
+    if (layerConfig.position.angleY) {
+      ;(layer as PositionMixin).setAngleY(layerConfig.position.angleY)
+    }
+    if (layerConfig.position.origin) {
+      ;(layer as PositionMixin).setOrigin(layerConfig.position.origin)
+    }
+    if (layerConfig.position.isRelative) {
+      ;(layer as PositionMixin).setIsRelative(layerConfig.position.isRelative)
+    }
+    if (layerConfig.position.x) {
+      ;(layer as PositionMixin).setX(layerConfig.position.x)
+    }
+    if (layerConfig.position.x) {
+      ;(layer as PositionMixin).setY(layerConfig.position.y)
+    }
+  }
+
+  if (layerConfig.size && SizeableLayers.includes(layer.type)) {
+    if (layerConfig.size.format) {
+      ;(layer as SizeMixin).setFormat(layerConfig.size.format)
+    }
+    if (layerConfig.size.height) {
+      ;(layer as SizeMixin).setHeight(layerConfig.size.height)
+    }
+    if (layerConfig.size.scale) {
+      ;(layer as SizeMixin).setScale(layerConfig.size.scale)
+    }
+    if (layerConfig.size.width) {
+      ;(layer as SizeMixin).setWidth(layerConfig.size.width)
+    }
+  }
+
+  if (layerConfig.timeline?.start && TimelineableLayers.includes(layer.type)) {
+    layer.setStart(layerConfig.timeline.start)
+  }
+
+  if (layerConfig.transitions && TransitionableLayers.includes(layer.type)) {
+    layerConfig.transitions.forEach((transition) => {
+      ;(layer as TransitionsMixin).addTransition(transition)
+    })
+  }
+
+  if (layerConfig.trim && TrimmableLayers.includes(layer.type)) {
+    layer.setTrim(layerConfig.trim.start, layerConfig.trim.end)
+  }
 }
 
 export const processKenBurns = ({

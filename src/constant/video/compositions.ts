@@ -32,6 +32,7 @@ export type LayerAttributeValue =
 export enum CompositionMethod {
   addAudio = 'addAudio',
   addFilter = 'addFilter',
+  addGroup = 'addGroup',
   addHtml = 'addHtml',
   addImage = 'addImage',
   addLottie = 'addLottie',

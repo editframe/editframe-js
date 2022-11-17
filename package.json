@@ -4,7 +4,7 @@
     "url": "https://github.com/editframe/editframe-js/issues"
   },
   "dependencies": {
-    "@editframe/shared-types": "3.7.1",
+    "@editframe/shared-types": "3.8.0",
     "audio-extensions": "^0.0.0",
     "camelcase-keys": "^7.0.2",
     "chalk": "^4",

@@ -7,6 +7,7 @@ import {
   CompositionOptions,
   FilterKey,
   FormDataInterface,
+  FormatValue,
   HtmlKey,
   HtmlLayer,
   HtmlOptions,
@@ -71,6 +72,7 @@ describe('Composition', () => {
   const host = 'host'
   const uuids = {
     [LayerType.audio]: '123456',
+    [LayerType.group]: '678901',
     [LayerType.image]: '23456',
     [LayerType.video]: '345678',
     [LayerType.subtitles]: '456789',
@@ -124,6 +126,7 @@ describe('Composition', () => {
   let uuidSpy: jest.SpyInstance
   let validateAudioLayerSpy: jest.SpyInstance
   let validateFilterLayerSpy: jest.SpyInstance
+  let validateGroupLayerSpy: jest.SpyInstance
   let validateHtmlLayerSpy: jest.SpyInstance
   let validateImageLayerSpy: jest.SpyInstance
   let validateLottieLayerSpy: jest.SpyInstance
@@ -173,6 +176,7 @@ describe('Composition', () => {
     removeDirectorySpy = jest.spyOn(FilesUtilsModule, 'removeDirectory').mockReturnValue(undefined)
     validateAudioLayerSpy = jest.spyOn(LayerValidationUtilsModule, 'validateAudioLayer')
     validateFilterLayerSpy = jest.spyOn(LayerValidationUtilsModule, 'validateFilterLayer')
+    validateGroupLayerSpy = jest.spyOn(LayerValidationUtilsModule, 'validateGroupLayer')
     validateHtmlLayerSpy = jest.spyOn(LayerValidationUtilsModule, 'validateHtmlLayer')
     validateImageLayerSpy = jest.spyOn(LayerValidationUtilsModule, 'validateImageLayer')
     validateLottieLayerSpy = jest.spyOn(LayerValidationUtilsModule, 'validateLottieLayer')
@@ -358,6 +362,108 @@ describe('Composition', () => {
     })
   })
 
+  describe('addGroup', () => {
+    const volume = 0.2
+    const position = {
+      angle: 10,
+      angleX: 20,
+      angleY: 30,
+      isRelative: true,
+      origin: 'left',
+      x: 0.5,
+      y: 0.75,
+    }
+    const size = {
+      format: FormatValue.fill,
+      height: 100,
+      scale: 3,
+      width: 200,
+    }
+    const timeline = {
+      start: 10,
+    }
+    const existingTransitions = [
+      {
+        options: {
+          duration: 2,
+        },
+        type: TransitionType.fadeIn,
+      },
+    ]
+    const transitions = [
+      {
+        options: {
+          duration: 2,
+        },
+        type: TransitionType.fadeIn,
+      },
+    ]
+    const trim = {
+      end: 2,
+      start: 1,
+    }
+
+    const groupLayerConfig = {
+      audio: {
+        volume,
+      },
+      position,
+      size,
+      timeline,
+      transitions,
+      trim,
+    }
+    let video1: Video
+    let video2: Video
+
+    beforeEach(async () => {
+      const mockVideoMetadata = mockApiVideoMetadata()
+
+      postMock = jest.fn().mockResolvedValueOnce(mockVideoMetadata).mockResolvedValueOnce(mockVideoMetadata)
+      const apiMock = mockApi({ post: postMock })
+
+      processCompositionFileSpy
+        .mockResolvedValueOnce(makeProcessedCompositionFile(LayerType.video))
+        .mockResolvedValueOnce(makeProcessedCompositionFile(LayerType.video))
+
+      uuidSpy.mockReturnValueOnce(uuids[LayerType.video])
+      uuidSpy.mockReturnValueOnce(uuids[LayerType.video])
+
+      composition = makeComposition({ customApiMock: apiMock })
+      video1 = await composition.addVideo(filenames.video, {
+        transitions: existingTransitions,
+      })
+      video2 = await composition.addVideo(filenames.video)
+
+      composition.addGroup([video1, video2], groupLayerConfig)
+    })
+
+    it('calls the `validateGroupLayer` function with the correct arguments', async () => {
+      expect(validateGroupLayerSpy).toHaveBeenCalledWith(CompositionMethod.addGroup, groupLayerConfig)
+    })
+
+    it('sets the provided config values on each member of the group', () => {
+      ;[video1, video2].map((video) => {
+        expect(video.volume).toEqual(groupLayerConfig.audio.volume)
+        expect(video.angle).toEqual(groupLayerConfig.position.angle)
+        expect(video.angleX).toEqual(groupLayerConfig.position.angleX)
+        expect(video.angleY).toEqual(groupLayerConfig.position.angleY)
+        expect(video.isRelative).toEqual(groupLayerConfig.position.isRelative)
+        expect(video.origin).toEqual(groupLayerConfig.position.origin)
+        expect(video.x).toEqual(groupLayerConfig.position.x)
+        expect(video.y).toEqual(groupLayerConfig.position.y)
+        expect(video.format).toEqual(groupLayerConfig.size.format)
+        expect(video.height).toEqual(groupLayerConfig.size.height)
+        expect(video.scale).toEqual(groupLayerConfig.size.scale)
+        expect(video.width).toEqual(groupLayerConfig.size.width)
+        expect(video.start).toEqual(groupLayerConfig.timeline.start)
+        expect(video.transitions[0]).toEqual(existingTransitions[0])
+        expect(video.transitions[1]).toEqual(groupLayerConfig.transitions[0])
+        expect(video.trim).toEqual(groupLayerConfig.trim)
+      })
+    })
+  })
+
   describe('addHtml', () => {
     beforeEach(() => {
       processCompositionFileSpy.mockResolvedValue(makeProcessedCompositionFile(LayerType.html))
@@ -527,6 +633,9 @@ describe('Composition', () => {
         uuidSpy.mockReturnValueOnce(uuids[LayerType.audio])
         uuidSpy.mockReturnValueOnce(uuids[LayerType.text])
         uuidSpy.mockReturnValueOnce(uuids[LayerType.video])
+        uuidSpy.mockReturnValueOnce('text2')
+        uuidSpy.mockReturnValueOnce('text3')
+        uuidSpy.mockReturnValueOnce(uuids[LayerType.group])
 
         composition = makeComposition({ customApiMock: apiMock })
       })
@@ -535,12 +644,17 @@ describe('Composition', () => {
         const audio = await composition.addAudio(filenames.audio, { volume: 1 }, { trim: { end: 5 } })
         const text = composition.addText({ text: 'text' }, { trim: { end: 5 } })
         const video = await composition.addVideo(filenames.video, { trim: { end: 5 } })
+        const text2 = composition.addText({ text: 'text2' })
+        const text3 = composition.addText({ text: 'text3' })
+        const group = composition.addGroup([text2, text3], { trim: { end: 1 } })
 
-        await composition.addSequence([audio, text, video])
+        await composition.addSequence([audio, text, video, group])
 
         expect(audio.start).toEqual(0)
         expect(text.start).toEqual(audio.trim.end - audio.trim.start)
         expect(video.start).toEqual(text.start + text.trim.end)
+        expect(text2.start).toEqual(video.start + video.trim.end)
+        expect(text3.start).toEqual(video.start + video.trim.end)
       })
     })
 

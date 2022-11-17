@@ -40,6 +40,8 @@ export {
   FontWeightValue,
   Format,
   FormatValue,
+  GroupLayer,
+  GroupLayerConfig,
   HtmlKey,
   HtmlLayer,
   HtmlLayerConfig,
