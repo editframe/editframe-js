@@ -6,6 +6,7 @@ import { Readable } from 'stream'
 import tempDirectory from 'temp-dir'
 
 import { FetchResponse } from 'constant'
+import { stripQueryParams } from 'utils/paths'
 import { uuid } from 'utils/strings'
 
 export const createDirectory = (directory: string): void => {
@@ -27,8 +28,14 @@ export const createTemporaryDirectory = (): string => {
 export const downloadFile = async (url: string, directory: string): Promise<{ temporaryFilePath: string }> => {
   const res = (await fetch(url)) as FetchResponse
   const contentType = res.headers.get('Content-Type')
-  const temporaryFilePath = `${directory}/${uuid()}${getExtension(url, contentType)}`
+  const temporaryFilePath = `${directory}/${uuid()}${getExtension(stripQueryParams(url), contentType)}`
+
   const fileStream = createWriteStream(temporaryFilePath)
+
+  // handle redirects
+  if (res.status > 300 && res.status < 400 && !!res.headers?.get('location')) {
+    return downloadFile(res.headers.get('location'), directory)
+  }
 
   await new Promise((resolve, reject) => {
     res.body.pipe(fileStream)
