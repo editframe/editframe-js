@@ -46,7 +46,6 @@ import {
 import { createReadStream, downloadFile, fileExists } from 'utils/files'
 import { urlOrFile } from 'utils/forms'
 import { deepClone, deepMerge } from 'utils/objects'
-import { stripQueryParams } from 'utils/paths'
 import { isValidUrl } from 'utils/validation'
 
 export const formDataKey = (file: CompositionFile, id: string): string => `${urlOrFile(file)}${id}`
@@ -115,7 +114,7 @@ export const processCompositionFile = async (
   }
 
   if (isValidUrl(file)) {
-    const { temporaryFilePath } = await downloadFile(stripQueryParams(file), temporaryDirectory)
+    const { temporaryFilePath } = await downloadFile(file, temporaryDirectory)
 
     return {
       filepath: temporaryFilePath,
